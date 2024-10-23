@@ -76,6 +76,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tax_car.wsgi.application'
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'car.utils.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
