@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from payment.models import PaymentTax
 from payment.serializers import PaymentTaxSerializer
+from car.serializers import *
+from car.models import *
 
 class PaymentTaxApiView(APIView):
 
@@ -25,13 +27,52 @@ class PaymentTaxApiView(APIView):
 
     def post(self, request, *args, **kwargs):
         """
-        Create a new PaymentTax entry.
+        Create a new PaymentTax entry with Car, Plaque, and CarPlaque associations.
         """
-        serializer = PaymentTaxSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Récupérer les données pour Car, Plaque et PaymentTax depuis la requête
+        car_data = request.data.get("car")
+        plaque_data = request.data.get("plaque")
+        payment_tax_data = request.data.get("payment_tax")
+
+        # Validation de la présence des données nécessaires
+        if not car_data or not plaque_data or not payment_tax_data:
+            return Response(
+                {'error': 'Car, Plaque, and PaymentTax data are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # 1. Création d'une nouvelle instance de Car
+        car_serializer = CarSerializer(data=car_data)
+        if car_serializer.is_valid():
+            car_instance = car_serializer.save()
+        else:
+            return Response(car_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # 2. Création d'une nouvelle instance de Plaque
+        plaque_serializer = PlaqueSerializer(data=plaque_data)
+        if plaque_serializer.is_valid():
+            plaque_instance = plaque_serializer.save()
+        else:
+            # Supprimer le véhicule si la création de la plaque échoue
+            car_instance.delete()
+            return Response(plaque_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 3. Création de l'association entre la voiture et la plaque dans CarPlaque
+        car_plaque = CarPlaque(car=car_instance, plaque=plaque_instance)
+        car_plaque.save()
+
+        # 4. Création de l'instance PaymentTax avec les références nécessaires
+        payment_tax_data["ref_car"] = car_instance.id  # Associer la voiture
+        payment_tax_serializer = PaymentTaxSerializer(data=payment_tax_data)
+        if payment_tax_serializer.is_valid():
+            payment_tax_instance = payment_tax_serializer.save()
+            return Response(payment_tax_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Supprimer les instances créées en cas d'erreur
+            car_plaque.delete()
+            plaque_instance.delete()
+            car_instance.delete()
+            return Response(payment_tax_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
         """

@@ -97,7 +97,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tax_car_db',
         'USER': 'root',
-        'PASSWORD': 'jesuistropcon',
+        'PASSWORD': '',
+        # 'PASSWORD': 'jesuistropcon',
         'HOST': 'localhost',
         'PORT': '3306'
     }
