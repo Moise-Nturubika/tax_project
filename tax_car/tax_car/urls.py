@@ -26,6 +26,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('api-auth/', include('rest_framework.urls')),
     path('car/', include(car_urls)),
-    path('payment/', include(payment_urls)),
+    path('tax/', include(payment_urls)),
     path('perceptor/', include(perceptor_urls)),
 ]
