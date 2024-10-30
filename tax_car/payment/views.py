@@ -7,7 +7,6 @@ from car.serializers import *
 from car.models import *
 
 class PaymentTaxApiView(APIView):
-
     def get(self, request, *args, **kwargs):
         """
         List all PaymentTaxes or get a single PaymentTax by ID.
@@ -63,6 +62,7 @@ class PaymentTaxApiView(APIView):
 
         # 4. Création de l'instance PaymentTax avec les références nécessaires
         payment_tax_data["ref_car"] = car_instance.id  # Associer la voiture
+        payment_tax_data["ref_perceptor"] = 1
         payment_tax_serializer = PaymentTaxSerializer(data=payment_tax_data)
         if payment_tax_serializer.is_valid():
             payment_tax_instance = payment_tax_serializer.save()
