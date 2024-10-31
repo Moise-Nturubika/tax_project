@@ -67,6 +67,7 @@ class PaymentTaxApiView(APIView):
                 "id": payment_tax_instance.id,
                 "date_paiement": payment_tax_instance.date_paiement,
                 "montant":  payment_tax_instance.montant,
+                "quittance_number": payment_tax_instance.quittance_number,
                 "ref_perceptor": payment_tax_instance.ref_perceptor.id
             }
             response_data = {
