@@ -22,8 +22,12 @@ class Perceptor(models.Model):
 
 class Utilisateur(models.Model):
     password = models.CharField(db_column="password", max_length=255)
-    ref_perceptor = models.OneToOneField(Perceptor, on_delete=models.DO_NOTHING, db_column="ref_perceptor")
-
+    ref_perceptor = models.OneToOneField(
+        Perceptor, 
+        on_delete=models.DO_NOTHING, 
+        db_column="ref_perceptor", 
+        related_name="utilisateur"  # Ensures Utilisateur can be accessed as `utilisateur` from Perceptor
+    )
     class Meta:
         db_table = 'tb_utilisateur'
 
