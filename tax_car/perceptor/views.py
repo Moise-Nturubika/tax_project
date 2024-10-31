@@ -132,6 +132,9 @@ class LoginApiView(APIView):
         """
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
+        print("============ LOGIN DATA =============")
+        print(f"Phone : {phone_number}")
+        print(f"Password : {password}")
 
         try:
             # Retrieve Perceptor by phone number
