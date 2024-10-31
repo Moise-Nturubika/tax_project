@@ -54,7 +54,7 @@ class PosteAttacheDetailView(APIView):
 class PerceptorListView(APIView):
     def get(self, request, *args, **kwargs):
         """
-        List all Perceptors with associated Utilisateur data.
+        List all Perceptors with associated Utilisateur and PosteAttache data.
         """
         perceptrors = Perceptor.objects.all()
         perceptor_data = PerceptorSerializer(perceptrors, many=True).data

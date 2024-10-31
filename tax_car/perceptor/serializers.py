@@ -14,11 +14,12 @@ class UtilisateurSerializer(serializers.ModelSerializer):
 
 
 class PerceptorSerializer(serializers.ModelSerializer):
-    utilisateur = UtilisateurSerializer(source='utilisateur_set', many=False, read_only=True)
+    poste = PosteAttacheSerializer(source='ref_poste', read_only=True)
+    user = UtilisateurSerializer(source='utilisateur', read_only=True)
 
     class Meta:
         model = Perceptor
-        fields = ['id', 'fullname', 'phone_number', 'ref_poste', 'utilisateur']
+        fields = ['id', 'fullname', 'phone_number', 'ref_poste', 'poste', 'user']
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
