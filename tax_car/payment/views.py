@@ -26,6 +26,12 @@ class PaymentTaxApiView(APIView):
         car_data = request.data.get("car")
         plaque_data = request.data.get("plaques")  # Expecting a list of plaques
         payment_tax_data = request.data.get("payment_tax")
+        print("===================== CAR DATA ========================")
+        print(car_data)
+        print("===================== PLAQUE DATA ========================")
+        print(plaque_data)
+        print("===================== PAYMENT DATA ========================")
+        print(payment_tax_data)
 
         if not car_data or not plaque_data or not payment_tax_data:
             return custom_response("error", "Car, Plaque, and PaymentTax data are required", status_code=status.HTTP_400_BAD_REQUEST)
