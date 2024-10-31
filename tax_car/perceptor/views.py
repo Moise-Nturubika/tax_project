@@ -52,10 +52,13 @@ class PosteAttacheDetailView(APIView):
 
 # Perceptor Views
 class PerceptorListView(APIView):
-    def get(self, request):
-        perceptrs = Perceptor.objects.all()
-        serializer = PerceptorSerializer(perceptrs, many=True)
-        return custom_response(data=serializer.data, message="Success", status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        """
+        List all Perceptors with associated Utilisateur data.
+        """
+        perceptrors = Perceptor.objects.all()
+        perceptor_data = PerceptorSerializer(perceptrors, many=True).data
+        return custom_response("success", "Data fetched successfully", perceptor_data)
 
     def post(self, request, *args, **kwargs):
         """
@@ -85,15 +88,6 @@ class PerceptorDetailView(APIView):
             return Perceptor.objects.get(pk=pk)
         except Perceptor.DoesNotExist:
             return None
-
-    def get(self, request, *args, **kwargs):
-        """
-        List all Perceptors with associated Utilisateur data.
-        """
-        perceptrors = Perceptor.objects.all()
-        perceptor_data = PerceptorSerializer(perceptrors, many=True).data
-        return custom_response("success", "Data fetched successfully", perceptor_data)
-
 
     def put(self, request, *args, **kwargs):
         """
