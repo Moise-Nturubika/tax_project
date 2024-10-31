@@ -77,7 +77,7 @@ class PerceptorListView(APIView):
             return custom_response("success", "Perceptor and Utilisateur created successfully", perceptor_serializer.data, status_code=status.HTTP_201_CREATED)
         else:
             return custom_response("error", "Validation failed", errors=perceptor_serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
-
+    
 
 class PerceptorDetailView(APIView):
     def get_object(self, pk):

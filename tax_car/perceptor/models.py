@@ -27,15 +27,13 @@ class Utilisateur(models.Model):
     class Meta:
         db_table = 'tb_utilisateur'
 
-
-@receiver(post_save, sender=Perceptor)
-def create_utilisateur(sender, instance, created, **kwargs):
-    if created:
-        Utilisateur.objects.create(
-            ref_perceptor=instance,
-            password=make_password(instance.password)
-        )
-
+# @receiver(post_save, sender=Perceptor)
+# def create_utilisateur(sender, instance, created, **kwargs):
+#     if created:
+#         Utilisateur.objects.create(
+#             ref_perceptor=instance,
+#             password=make_password(instance.password)
+#         )
 
 class Role(models.Model):
     designation = models.CharField(db_column="designation", max_length=100)
