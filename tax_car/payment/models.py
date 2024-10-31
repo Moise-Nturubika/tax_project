@@ -8,7 +8,7 @@ class PaymentTax(models.Model):
     montant = models.FloatField(db_column="montant")
     ref_car = models.ForeignKey(Car, on_delete=models.DO_NOTHING, db_column="ref_car")
     ref_perceptor = models.ForeignKey(Perceptor, on_delete=models.DO_NOTHING, db_column="ref_perceptor")
-    quittance_number = models.CharField(max_length=10, editable=False, unique=True, default="0", db_column="quittance_number")
+    quittance_number = models.CharField(max_length=10, editable=False, unique=True, null=True, db_column="quittance_number")
 
     class Meta:
         db_table = 'tb_payment_tax'
