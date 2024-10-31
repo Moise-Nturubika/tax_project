@@ -26,12 +26,6 @@ class PaymentTaxApiView(APIView):
         car_data = request.data.get("car")
         plaque_data = request.data.get("plaques")  # Expecting a list of plaques
         payment_tax_data = request.data.get("payment_tax")
-        print("===================== CAR DATA ========================")
-        print(car_data)
-        print("===================== PLAQUE DATA ========================")
-        print(plaque_data)
-        print("===================== PAYMENT DATA ========================")
-        print(payment_tax_data)
 
         if not car_data or not plaque_data or not payment_tax_data:
             return custom_response("error", "Car, Plaque, and PaymentTax data are required", status_code=status.HTTP_400_BAD_REQUEST)
@@ -45,12 +39,17 @@ class PaymentTaxApiView(APIView):
 
         # Création de Plaque(s)
         plaques_instances = []
+        car_plaques = []
         for plaque in plaque_data[:2]:  # Maximum two plaques
             plaque_serializer = PlaqueSerializer(data=plaque)
             if plaque_serializer.is_valid():
                 plaque_instance = plaque_serializer.save()
                 plaques_instances.append(plaque_instance)
-                CarPlaque.objects.create(car=car_instance, plaque=plaque_instance)
+                car_plaque = CarPlaque.objects.create(car=car_instance, plaque=plaque_instance)
+                car_plaques.append({
+                    "id": plaque_instance.id,
+                    "car_plaque_id": car_plaque.id
+                })
             else:
                 # Supprimer le véhicule en cas d'échec de création de plaque
                 car_instance.delete()
@@ -61,7 +60,21 @@ class PaymentTaxApiView(APIView):
         payment_tax_serializer = PaymentTaxSerializer(data=payment_tax_data)
         if payment_tax_serializer.is_valid():
             payment_tax_instance = payment_tax_serializer.save()
-            return custom_response("success", "PaymentTax created successfully", payment_tax_serializer.data, status_code=status.HTTP_201_CREATED)
+            cars = {
+                "id": car_instance.id,
+            }
+            payments = {
+                "id": payment_tax_instance.id,
+                "date_paiement": payment_tax_instance.date_paiement,
+                "montant":  payment_tax_instance.montant,
+                "ref_perceptor": payment_tax_instance.ref_perceptor
+            }
+            response_data = {
+                "car": cars,
+                "vehicule_plaque": car_plaques,
+                "payment": payments
+            }
+            return custom_response("success", "PaymentTax created successfully", response_data, status_code=status.HTTP_201_CREATED)
         else:
             # Nettoyer les enregistrements en cas d'erreur
             for plaque_instance in plaques_instances:
