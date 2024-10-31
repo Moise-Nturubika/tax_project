@@ -6,15 +6,19 @@ class PosteAttacheSerializer(serializers.ModelSerializer):
         model = PosteAttache
         fields = '__all__'
 
-class PerceptorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Perceptor
-        fields = '__all__'
-
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = '__all__'
+        fields = ['id', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+
+class PerceptorSerializer(serializers.ModelSerializer):
+    utilisateur = UtilisateurSerializer(source='utilisateur_set', many=False, read_only=True)
+
+    class Meta:
+        model = Perceptor
+        fields = ['id', 'fullname', 'phone_number', 'ref_poste', 'utilisateur']
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

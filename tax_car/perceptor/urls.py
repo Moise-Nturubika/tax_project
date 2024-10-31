@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from .views import LoginApiView
 
 urlpatterns = [
     path('postes/', PosteAttacheListView.as_view(), name='postes_list'),
@@ -18,4 +19,7 @@ urlpatterns = [
     # UserRole URLs
     path('user-role/', UserRoleListView.as_view(), name='user-role-list'),
     path('user-role/<int:pk>/', UserRoleDetailView.as_view(), name='user-role-detail'),
+
+    # User login
+    path('users/login/', LoginApiView.as_view(), name='user-login'),
 ]
