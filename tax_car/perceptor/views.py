@@ -128,20 +128,47 @@ class PerceptorDetailView(APIView):
 class LoginApiView(APIView):
     def post(self, request, *args, **kwargs):
         """
-        Authenticate user by phone number and password.
+        Authenticate user by phone number and password and return detailed user information.
         """
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
 
         try:
+            # Retrieve Perceptor by phone number
             perceptor = Perceptor.objects.get(phone_number=phone_number)
+            # Retrieve the associated Utilisateur using the related name
             utilisateur = Utilisateur.objects.get(ref_perceptor=perceptor)
 
+            # Check if the password is correct
             if check_password(password, utilisateur.password):
-                return custom_response("success", "Login successful")
+                # Serializing the Perceptor with nested PosteAttache and Utilisateur data
+                perceptor_data = {
+                    "id": perceptor.id,
+                    "fullname": perceptor.fullname,
+                    "phone_number": perceptor.phone_number,
+                    "ref_poste": perceptor.ref_poste.id
+                }
+                poste_data = {
+                    "id": perceptor.ref_poste.id,
+                    "designation": perceptor.ref_poste.designation,
+                    "localisation": perceptor.ref_poste.localisation
+                }
+                user_data = {
+                    "id": utilisateur.id
+                }
+
+                # Construct the response data
+                response_data = {
+                    "perceptor": perceptor_data,
+                    "poste": poste_data,
+                    "user": user_data
+                }
+
+                return custom_response("success", "Login successful", response_data, status_code=status.HTTP_200_OK)
             else:
                 return custom_response("error", "Incorrect password", status_code=status.HTTP_400_BAD_REQUEST)
-        except (Perceptor.DoesNotExist, Utilisateur.DoesNotExist):
+        
+        except Perceptor.DoesNotExist:
             return custom_response("error", "User not found", status_code=status.HTTP_404_NOT_FOUND)
 
 # Utilisateur Views
