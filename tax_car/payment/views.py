@@ -51,6 +51,9 @@ class PaymentTaxApiView(APIView):
                     "car_plaque_id": car_plaque.id
                 })
             else:
+                print("========== PLAQUE DATA ERRORS ============")
+                print(plaque_serializer.error_messages)
+                print(plaque_serializer.errors)
                 # Supprimer le véhicule en cas d'échec de création de plaque
                 car_instance.delete()
                 return custom_response("error", "Invalid Plaque data", errors=plaque_serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
