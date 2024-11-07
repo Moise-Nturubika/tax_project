@@ -19,8 +19,45 @@ class PaymentTaxApiView(APIView):
                 return custom_response("error", "PaymentTax not found", status_code=status.HTTP_404_NOT_FOUND)
         else:
             payment_taxes = PaymentTax.objects.all()
-            serializer = PaymentTaxSerializer(payment_taxes, many=True)
-            return custom_response("success", "All PaymentTaxes retrieved successfully", serializer.data)
+            payment_data = []
+            for payment_tax in payment_taxes:
+                car_plaques = CarPlaque.objects.filter(car=payment_tax.ref_car)
+                plaques = []
+                for elmt in car_plaques:
+                    plaques.append({
+                        "id": elmt.plaque.id,
+                        "numero": elmt.plaque.numero,
+                        "code_pays": elmt.plaque.code_pays
+                    })
+                payment_data.append({
+                    "date_paiement": payment_tax.date_paiement,
+                    "montant": payment_tax.montant,
+                    "quittance_number": payment_tax.quittance_number,
+                    "ref_car": payment_tax.ref_car.id,
+                    "ref_perceptor": payment_tax.ref_perceptor.id,
+                    "car": {
+                        "id": payment_tax.ref_car.id,
+                        "client_name": payment_tax.ref_car.client_name,
+                        "category": {
+                            "id": payment_tax.ref_car.category.id,
+                            "label": payment_tax.ref_car.category.label,
+                        },
+                        "plaques": plaques
+                    },
+                    "perceptor": {
+                        "id": payment_tax.ref_perceptor.id,
+                        "fullname": payment_tax.ref_perceptor.fullname,
+                        "phone_number": payment_tax.ref_perceptor.phone_number,
+                        "ref_poste": payment_tax.ref_perceptor.ref_poste.id,
+                        "poste": {
+                            "id": payment_tax.ref_perceptor.ref_poste.id,
+                            "designation": payment_tax.ref_perceptor.ref_poste.designation,
+                            "localisation": payment_tax.ref_perceptor.ref_poste.localisation,
+                        }
+                    }
+                })
+            # serializer = PaymentTaxSerializer(payment_taxes, many=True)
+            return custom_response("success", "All PaymentTaxes retrieved successfully", payment_data)
 
     def post(self, request, *args, **kwargs):
         car_data = request.data.get("car")
